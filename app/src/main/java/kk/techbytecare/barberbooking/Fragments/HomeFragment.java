@@ -1,6 +1,7 @@
 package kk.techbytecare.barberbooking.Fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -27,9 +28,11 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import kk.techbytecare.barberbooking.Adapter.HomeSliderAdapter;
 import kk.techbytecare.barberbooking.Adapter.LookBookAdapter;
+import kk.techbytecare.barberbooking.BookingActivity;
 import kk.techbytecare.barberbooking.Common.Common;
 import kk.techbytecare.barberbooking.Interface.IBannerLoadListener;
 import kk.techbytecare.barberbooking.Interface.ILookBookLoadListener;
@@ -56,6 +59,12 @@ public class HomeFragment extends Fragment implements IBannerLoadListener, ILook
 
     @BindView(R.id.recycler_look_book)
     RecyclerView recycler_look_book;
+
+    @OnClick(R.id.card_view_booking)
+    void booking()  {
+        startActivity(new Intent(getActivity(), BookingActivity.class));
+    }
+
 
     CollectionReference lookBookRef,bannerRef;
 
