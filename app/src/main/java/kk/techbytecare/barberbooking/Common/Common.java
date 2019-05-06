@@ -1,7 +1,11 @@
 package kk.techbytecare.barberbooking.Common;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import kk.techbytecare.barberbooking.Model.Barber;
 import kk.techbytecare.barberbooking.Model.Salon;
+import kk.techbytecare.barberbooking.Model.TimeSlot;
 import kk.techbytecare.barberbooking.Model.User;
 
 public class Common {
@@ -12,12 +16,18 @@ public class Common {
     public static final String KEY_STEP = "STEP";
     public static final String KEY_BARBER_SELECTED = "BARBER_SELECTED";
     public static final int TIME_SLOT_TOTAL = 20;
+    public static final Object DISABLE_TAG = "DISABLE";
+    public static final String KEY_TIME_SLOT = "TIME_SLOT";
+    public static final String KEY_CONFIRM_BOOKING = "CONFIRM_BOOKING";
     public static String IS_LOGIN = "IsLogin";
     public static User currentUser;
     public static Salon CurrentSalon;
     public static int step = 0;
     public static String city = "";
     public static Barber CurrentBarber;
+    public static int CurrentTimeSlot = -1;
+    public static Calendar currentDate = Calendar.getInstance();
+    public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd_MM_yyyy");
 
     public static String convertTimeToString(int slot) {
         switch (slot)   {

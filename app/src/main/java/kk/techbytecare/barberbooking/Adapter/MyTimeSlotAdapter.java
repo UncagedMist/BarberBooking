@@ -1,7 +1,9 @@
 package kk.techbytecare.barberbooking.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,14 +26,20 @@ public class MyTimeSlotAdapter extends RecyclerView.Adapter<MyTimeSlotAdapter.My
 
     List<CardView> cardViewList;
 
+    LocalBroadcastManager localBroadcastManager;
+
     public MyTimeSlotAdapter(Context context) {
         this.context = context;
         this.timeSlotList = new ArrayList<>();
+        this.localBroadcastManager = LocalBroadcastManager.getInstance(context);
+        cardViewList = new ArrayList<>();
     }
 
     public MyTimeSlotAdapter(Context context, List<TimeSlot> timeSlotList) {
         this.context = context;
         this.timeSlotList = timeSlotList;
+        this.localBroadcastManager = LocalBroadcastManager.getInstance(context);
+        cardViewList = new ArrayList<>();
     }
 
     @NonNull
@@ -44,7 +52,7 @@ public class MyTimeSlotAdapter extends RecyclerView.Adapter<MyTimeSlotAdapter.My
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
+    public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, final int i) {
         myViewHolder.txt_time_slot.setText(new StringBuilder(Common.convertTimeToString(i)).toString());
 
         if (timeSlotList.size() == 0)   {
@@ -59,6 +67,9 @@ public class MyTimeSlotAdapter extends RecyclerView.Adapter<MyTimeSlotAdapter.My
                 int slot = Integer.parseInt(slotValue.getSlot().toString());
 
                 if (slot == i)  {
+
+                    myViewHolder.card_time_slot.setTag(Common.DISABLE_TAG);
+
                     myViewHolder.card_time_slot.setCardBackgroundColor(context.getResources().getColor(android.R.color.darker_gray));
 
                     myViewHolder.txt_time_slot_description.setText("Full");
@@ -67,6 +78,28 @@ public class MyTimeSlotAdapter extends RecyclerView.Adapter<MyTimeSlotAdapter.My
                 }
             }
         }
+
+        if (!cardViewList.contains(myViewHolder.card_time_slot))    {
+            cardViewList.add(myViewHolder.card_time_slot);
+        }
+
+
+        myViewHolder.setiRecyclerItemSelectedListener(new IRecyclerItemSelectedListener() {
+            @Override
+            public void onItemSelectedListener(View view, int pos) {
+                for (CardView cardView : cardViewList)  {
+                    if (cardView.getTag() == null)  {
+                        cardView.setCardBackgroundColor(context.getResources().getColor(android.R.color.white));
+                    }
+                    myViewHolder.card_time_slot.setCardBackgroundColor(context.getResources().getColor(android.R.color.holo_orange_dark));
+
+                    Intent intent = new Intent(Common.KEY_ENABLE_NEXT_BUTTON);
+                    intent.putExtra(Common.KEY_TIME_SLOT,i);
+                    intent.putExtra(Common.KEY_STEP,3);
+                    localBroadcastManager.sendBroadcast(intent);
+                }
+            }
+        });
     }
 
     @Override
@@ -74,16 +107,16 @@ public class MyTimeSlotAdapter extends RecyclerView.Adapter<MyTimeSlotAdapter.My
         return Common.TIME_SLOT_TOTAL;
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder  {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView txt_time_slot,txt_time_slot_description;
         CardView card_time_slot;
 
-//        IRecyclerItemSelectedListener iRecyclerItemSelectedListener;
+        IRecyclerItemSelectedListener iRecyclerItemSelectedListener;
 
-//        public void setiRecyclerItemSelectedListener(IRecyclerItemSelectedListener iRecyclerItemSelectedListener) {
-//            this.iRecyclerItemSelectedListener = iRecyclerItemSelectedListener;
-//        }
+        public void setiRecyclerItemSelectedListener(IRecyclerItemSelectedListener iRecyclerItemSelectedListener) {
+            this.iRecyclerItemSelectedListener = iRecyclerItemSelectedListener;
+        }
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -92,12 +125,12 @@ public class MyTimeSlotAdapter extends RecyclerView.Adapter<MyTimeSlotAdapter.My
             txt_time_slot = itemView.findViewById(R.id.txt_time_slot);
             txt_time_slot_description = itemView.findViewById(R.id.txt_time_slot_description);
 
-            //itemView.setOnClickListener(this);
+            itemView.setOnClickListener(this);
         }
 
-//        @Override
-//        public void onClick(View v) {
-//            iRecyclerItemSelectedListener.onItemSelectedListener(v,getAdapterPosition());
-//        }
+        @Override
+        public void onClick(View v) {
+            iRecyclerItemSelectedListener.onItemSelectedListener(v,getAdapterPosition());
+        }
     }
 }
