@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -16,21 +17,20 @@ import java.util.List;
 
 import kk.techbytecare.barberbooking.Common.Common;
 import kk.techbytecare.barberbooking.Interface.IRecyclerItemSelectedListener;
-import kk.techbytecare.barberbooking.Model.Salon;
+import kk.techbytecare.barberbooking.Model.Barber;
 import kk.techbytecare.barberbooking.R;
 
-public class MySalonAdapter extends RecyclerView.Adapter<MySalonAdapter.MyViewHolder> {
+public class MyBarberAdapter extends RecyclerView.Adapter<MyBarberAdapter.MyViewHolder> {
 
     Context context;
-    List<Salon> salonList;
+    List<Barber> barberList;
 
     List<CardView> cardViewList;
-
     LocalBroadcastManager localBroadcastManager;
 
-    public MySalonAdapter(Context context, List<Salon> salonList) {
+    public MyBarberAdapter(Context context, List<Barber> barberList) {
         this.context = context;
-        this.salonList = salonList;
+        this.barberList = barberList;
         cardViewList = new ArrayList<>();
         localBroadcastManager = LocalBroadcastManager.getInstance(context);
     }
@@ -38,20 +38,19 @@ public class MySalonAdapter extends RecyclerView.Adapter<MySalonAdapter.MyViewHo
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-
         View itemView = LayoutInflater.from(context)
-                .inflate(R.layout.layout_salon,viewGroup,false);
+                .inflate(R.layout.layout_barber,viewGroup,false);
 
-        return new MyViewHolder(itemView);
+        return new MyBarberAdapter.MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, int i) {
-        myViewHolder.txt_salon_name.setText(salonList.get(i).getName());
-        myViewHolder.txt_salon_address.setText(salonList.get(i).getAddress());
+        myViewHolder.txt_barber_name.setText(barberList.get(i).getName());
+        myViewHolder.ratingBar.setRating((float)barberList.get(i).getRating());
 
-        if (!cardViewList.contains(myViewHolder.card_salon))    {
-            cardViewList.add(myViewHolder.card_salon);
+        if (!cardViewList.contains(myViewHolder.card_barber))   {
+            cardViewList.add(myViewHolder.card_barber);
         }
 
         myViewHolder.setiRecyclerItemSelectedListener(new IRecyclerItemSelectedListener() {
@@ -61,12 +60,11 @@ public class MySalonAdapter extends RecyclerView.Adapter<MySalonAdapter.MyViewHo
                 for (CardView cardView : cardViewList)  {
                     cardView.setCardBackgroundColor(context.getResources().getColor(android.R.color.white));
                 }
-
-                myViewHolder.card_salon.setCardBackgroundColor(context.getResources().getColor(android.R.color.holo_orange_dark));
+                myViewHolder.card_barber.setCardBackgroundColor(context.getResources().getColor(android.R.color.holo_orange_dark));
 
                 Intent intent = new Intent(Common.KEY_ENABLE_NEXT_BUTTON);
-                intent.putExtra(Common.KEY_SALON_STORE,salonList.get(pos));
-                intent.putExtra(Common.KEY_STEP,1);
+                intent.putExtra(Common.KEY_BARBER_SELECTED,barberList.get(pos));
+                intent.putExtra(Common.KEY_STEP,2);
                 localBroadcastManager.sendBroadcast(intent);
             }
         });
@@ -74,13 +72,14 @@ public class MySalonAdapter extends RecyclerView.Adapter<MySalonAdapter.MyViewHo
 
     @Override
     public int getItemCount() {
-        return salonList.size();
+        return barberList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView txt_salon_name,txt_salon_address;
-        CardView card_salon;
+        TextView txt_barber_name;
+        RatingBar ratingBar;
+        CardView card_barber;
 
         IRecyclerItemSelectedListener iRecyclerItemSelectedListener;
 
@@ -91,16 +90,16 @@ public class MySalonAdapter extends RecyclerView.Adapter<MySalonAdapter.MyViewHo
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            card_salon = itemView.findViewById(R.id.card_salon);
-            txt_salon_name = itemView.findViewById(R.id.txt_salon_name);
-            txt_salon_address = itemView.findViewById(R.id.txt_salon_address);
+            card_barber = itemView.findViewById(R.id.card_barber);
+            txt_barber_name = itemView.findViewById(R.id.txt_barber_name);
+            ratingBar = itemView.findViewById(R.id.rtb_barber);
 
             itemView.setOnClickListener(this);
         }
 
         @Override
-        public void onClick(View view) {
-            iRecyclerItemSelectedListener.onItemSelectedListener(view,getAdapterPosition());
+        public void onClick(View v) {
+            iRecyclerItemSelectedListener.onItemSelectedListener(v,getAdapterPosition());
         }
     }
 }

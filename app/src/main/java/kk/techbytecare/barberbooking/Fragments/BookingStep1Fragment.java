@@ -29,6 +29,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import dmax.dialog.SpotsDialog;
 import kk.techbytecare.barberbooking.Adapter.MySalonAdapter;
+import kk.techbytecare.barberbooking.Common.Common;
 import kk.techbytecare.barberbooking.Common.SpaceItemDecoration;
 import kk.techbytecare.barberbooking.Interface.IAllSalonLoadListener;
 import kk.techbytecare.barberbooking.Interface.IBranchLoadListener;
@@ -70,7 +71,7 @@ public class BookingStep1Fragment extends Fragment implements IAllSalonLoadListe
         iAllSalonLoadListener = this;
         iBranchLoadListener = this;
 
-        dialog = new SpotsDialog.Builder().setContext(getActivity()).build();
+        dialog = new SpotsDialog.Builder().setContext(getActivity()).setCancelable(false).build();
     }
 
     @Nullable
@@ -137,6 +138,8 @@ public class BookingStep1Fragment extends Fragment implements IAllSalonLoadListe
     private void loadBranchOfCity(String cityName) {
         dialog.show();
 
+        Common.city = cityName;
+
         branchRef = FirebaseFirestore.getInstance()
                 .collection("AllSalon")
                 .document(cityName)
@@ -151,7 +154,10 @@ public class BookingStep1Fragment extends Fragment implements IAllSalonLoadListe
 
                         if (task.isSuccessful())    {
                             for (QueryDocumentSnapshot documentSnapshot : task.getResult())     {
-                                list.add(documentSnapshot.toObject(Salon.class));
+
+                                Salon salon = documentSnapshot.toObject(Salon.class);
+                                salon.setSalonId(documentSnapshot.getId());
+                                list.add(salon);
                             }
                             iBranchLoadListener.onBranchLoadSuccess(list);
                         }
